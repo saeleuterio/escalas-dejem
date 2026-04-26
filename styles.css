@@ -325,8 +325,16 @@ code, pre {
 .scale-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.75rem;
     margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.scale-id-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .scale-id {
@@ -339,14 +347,27 @@ code, pre {
     font-weight: 600;
 }
 
-.scale-time {
+.scale-time-badge {
     display: inline-block;
     padding: 0.25rem 0.75rem;
-    background: #f1f5f9;
-    color: #64748b;
+    background: #fef3c7;
+    color: #92400e;
     border-radius: 0.375rem;
     font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'Courier Prime', monospace;
+}
+
+.scale-sheet-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: #e0e7ff;
+    color: #3730a3;
+    border-radius: 0.375rem;
+    font-size: 0.7rem;
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .scale-link-info {

@@ -1,6 +1,7 @@
 /**
  * SISTEMA DE ESCALAS - LÓGICA PRINCIPAL
  * Integração com Google Sheets para dados dinâmicos
+ * Carrega TODAS as abas e consolida as escalas por data
  */
 
 // Estado da aplicação
@@ -9,6 +10,7 @@ let state = {
   currentMonth: new Date(),
   filteredScales: [],
   allScales: [],
+  allSheetNames: [],
   isLoading: true,
   error: null,
 };
@@ -25,27 +27,56 @@ const nextMonthBtn = document.getElementById("nextMonthBtn");
 // ============================================
 
 /**
- * Busca dados da planilha Google Sheets
+ * Busca dados de TODAS as abas da planilha
  */
-async function fetchSheetsData() {
+async function fetchAllSheetsData() {
   try {
     state.isLoading = true;
     state.allScales = [];
 
-    console.log("Iniciando carregamento de dados...");
+    console.log("Iniciando carregamento de dados de todas as abas...");
 
-    // Carrega dados de cada aba
-    for (const sheetName of SHEET_NAMES) {
-      try {
-        const scales = await fetchSheetData(sheetName);
-        state.allScales.push(...scales);
-        console.log(`✓ Carregado: ${sheetName} (${scales.length} escalas)`);
-      } catch (error) {
-        console.warn(`⚠ Erro ao carregar ${sheetName}:`, error.message);
-      }
-    }
+    // Lista de abas conhecidas para tentar carregar
+    const sheetNames = [
+      "ABRIL 2026",
+      "CABINE LILÁS ABRIL 2026",
+      "OFICIAIS ABRIL 2026",
+      "MAIO 2026",
+      "OFICIAIS MAIO 2026",
+      "JUNHO 2026",
+      "JULHO 2026",
+      "AGOSTO 2026",
+      "SETEMBRO 2026",
+      "OUTUBRO 2026",
+      "NOVEMBRO 2026",
+      "DEZEMBRO 2026",
+      "EM BRANCO",
+    ];
+
+    // Carrega dados de cada aba em paralelo
+    const promises = sheetNames.map((sheetName) =>
+      fetchSheetData(sheetName)
+        .then((scales) => {
+          console.log(`✓ Carregado: ${sheetName} (${scales.length} escalas)`);
+          return scales;
+        })
+        .catch((error) => {
+          console.warn(`⚠ Erro ao carregar ${sheetName}:`, error.message);
+          return [];
+        }),
+    );
+
+    // Aguarda todas as requisições
+    const allResults = await Promise.all(promises);
+
+    // Consolida todos os resultados
+    state.allScales = allResults.flat();
+
+    // Remove duplicatas (mesma data, id e horário)
+    state.allScales = removeDuplicates(state.allScales);
 
     console.log(`✓ Total de escalas carregadas: ${state.allScales.length}`);
+    console.log("Escalas por data:", groupScalesByDate(state.allScales));
 
     // Se conseguiu carregar dados, define o mês inicial baseado nos dados
     if (state.allScales.length > 0) {
@@ -69,20 +100,60 @@ async function fetchSheetsData() {
 }
 
 /**
+ * Remove escalas duplicadas (mantém a primeira ocorrência)
+ */
+function removeDuplicates(scales) {
+  const seen = new Map();
+  return scales.filter((scale) => {
+    const key = `${scale.date}-${scale.id}-${scale.time}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.set(key, scale.sheet);
+    return true;
+  });
+}
+
+/**
+ * Agrupa escalas por data para debug
+ */
+function groupScalesByDate(scales) {
+  const grouped = {};
+  scales.forEach((scale) => {
+    if (!grouped[scale.date]) {
+      grouped[scale.date] = 0;
+    }
+    grouped[scale.date]++;
+  });
+  return grouped;
+}
+
+/**
  * Busca dados de uma aba específica
  */
 async function fetchSheetData(sheetName) {
-  const url = getSheetExportUrlV2(sheetName);
+  const url = getSheetExportUrl(sheetName);
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "text/csv",
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`Erro HTTP: ${response.status}`);
     }
 
     const csv = await response.text();
-    return parseCSV(csv);
+
+    // Verifica se a resposta é válida
+    if (!csv || csv.includes("<!DOCTYPE") || csv.includes("<html")) {
+      throw new Error("Resposta inválida do servidor");
+    }
+
+    return parseCSV(csv, sheetName);
   } catch (error) {
     console.error(`Erro ao buscar ${sheetName}:`, error);
     throw error;
@@ -91,8 +162,9 @@ async function fetchSheetData(sheetName) {
 
 /**
  * Converte CSV para array de objetos
+ * Estrutura esperada: LINK | ID | DATA | HORA_INICIO | HORA_FIM
  */
-function parseCSV(csv) {
+function parseCSV(csv, sheetName = "Desconhecida") {
   const lines = csv.trim().split("\n");
   const scales = [];
 
@@ -106,25 +178,38 @@ function parseCSV(csv) {
     // Parse da linha CSV
     const parts = parseCSVLine(line);
 
-    // Valida se tem os dados necessários
-    if (parts.length >= 3) {
-      const link = parts[COLUMNS.LINK]?.trim();
-      const id = parts[COLUMNS.ID]?.trim();
-      const dateTimeStr = parts[COLUMNS.DATE_TIME]?.trim();
+    // Valida se tem os dados necessários (mínimo 5 colunas)
+    if (parts.length >= 5) {
+      const link = parts[0]?.trim();
+      const id = parts[1]?.trim();
+      const datePart = parts[2]?.trim();
+      const timeStart = parts[3]?.trim();
+      const timeEnd = parts[4]?.trim();
 
-      // Só adiciona se tiver link e id
-      if (link && id && dateTimeStr) {
-        // Extrai data e hora do formato "DD/MM/YYYY HH:MM"
-        const [datePart, timePart] = dateTimeStr.split(" ");
+      // Só adiciona se tiver link, id e data
+      if (link && id && datePart) {
+        // Monta o horário no formato HH:MM-HH:MM
+        let timePart = "00:00";
+        if (timeStart) {
+          timePart = timeStart;
+          if (timeEnd) {
+            timePart = `${timeStart}-${timeEnd}`;
+          }
+        }
 
         // Valida formato da data
         if (isValidDate(datePart)) {
-          scales.push({
+          const scaleObj = {
             id: id,
             date: datePart,
-            time: timePart || "00:00",
+            time: timePart,
             link: link,
-          });
+            sheet: sheetName, // Adiciona informação da aba
+          };
+          scales.push(scaleObj);
+          console.log(
+            `[${sheetName}] Escala: ID=${id}, Data=${datePart}, Hora=${timePart}`,
+          );
         }
       }
     }
@@ -262,7 +347,12 @@ function hasScales(dateStr) {
  * Obtém escalas para uma data específica
  */
 function getScalesForDate(dateStr) {
-  return state.allScales.filter((scale) => scale.date === dateStr);
+  return state.allScales
+    .filter((scale) => scale.date === dateStr)
+    .sort((a, b) => {
+      // Ordena por horário
+      return a.time.localeCompare(b.time);
+    });
 }
 
 // ============================================
@@ -443,10 +533,21 @@ function createScaleCard(scale) {
   const card = document.createElement("div");
   card.className = "scale-card";
 
+  // Formata o nome da aba para exibição
+  const sheetDisplay = scale.sheet
+    ? scale.sheet
+        .replace(" ABRIL 2026", "")
+        .replace(" MAIO 2026", "")
+        .replace(" JUNHO 2026", "")
+    : "Desconhecida";
+
   card.innerHTML = `
         <div class="scale-header">
-            <span class="scale-id">ID: ${scale.id}</span>
-            <span class="scale-time">${scale.time}</span>
+            <div class="scale-id-info">
+                <span class="scale-id">ID: ${scale.id}</span>
+                <span class="scale-time-badge">${scale.time}</span>
+            </div>
+            <span class="scale-sheet-badge">${sheetDisplay}</span>
         </div>
         <p class="scale-link-info">
             <svg class="scale-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -513,7 +614,7 @@ nextMonthBtn.addEventListener("click", nextMonth);
 
 function init() {
   console.log("Iniciando Sistema de Escalas...");
-  fetchSheetsData();
+  fetchAllSheetsData();
 }
 
 // Inicia a aplicação quando o DOM estiver pronto
