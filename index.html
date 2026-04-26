@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Escalas DEJEM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="header-title">
+                        <div class="header-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                        </div>
+                        <h1>Sistema de Escalas</h1>
+                    </div>
+                    <p class="header-subtitle">DEJEM COPOM 2025 - Selecione uma data para visualizar as escalas disponíveis</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <div class="grid">
+                    <!-- Calendar Section -->
+                    <div class="calendar-section">
+                        <div class="card">
+                            <div class="calendar-header">
+                                <div class="month-navigation">
+                                    <h2 id="monthName" class="month-title">Carregando...</h2>
+                                    <div class="nav-buttons">
+                                        <button id="prevMonthBtn" class="nav-btn" title="Mês anterior">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="15 18 9 12 15 6"></polyline>
+                                            </svg>
+                                        </button>
+                                        <button id="nextMonthBtn" class="nav-btn" title="Próximo mês">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="9 18 15 12 9 6"></polyline>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Weekday Headers -->
+                                <div class="weekdays">
+                                    <div class="weekday">Dom</div>
+                                    <div class="weekday">Seg</div>
+                                    <div class="weekday">Ter</div>
+                                    <div class="weekday">Qua</div>
+                                    <div class="weekday">Qui</div>
+                                    <div class="weekday">Sex</div>
+                                    <div class="weekday">Sab</div>
+                                </div>
+                            </div>
+
+                            <!-- Calendar Grid -->
+                            <div id="calendarGrid" class="calendar-grid">
+                                <!-- Preenchido por JavaScript -->
+                            </div>
+
+                            <!-- Legend -->
+                            <div class="calendar-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color selected"></div>
+                                    <span>Data selecionada</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color available"></div>
+                                    <span>Com escalas</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color unavailable"></div>
+                                    <span>Sem escalas</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scales List Section -->
+                    <div class="scales-section">
+                        <div id="scalesContainer">
+                            <!-- Preenchido por JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p>Sistema de Escalas DEJEM © 2025 - Todos os direitos reservados</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
