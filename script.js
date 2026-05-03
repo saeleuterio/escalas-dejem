@@ -81,15 +81,9 @@ async function fetchAllSheetsData() {
     console.log(`✓ Total de escalas carregadas: ${state.allScales.length}`);
     console.log("Escalas por data:", groupScalesByDate(state.allScales));
 
-    // Se conseguiu carregar dados, define o mês inicial baseado nos dados
-    if (state.allScales.length > 0) {
-      const firstDate = parseDate(state.allScales[0].date);
-      state.currentMonth = new Date(
-        firstDate.getFullYear(),
-        firstDate.getMonth(),
-        1,
-      );
-    }
+    // Sempre inicia com o mês vigente (atual)
+    state.currentMonth = new Date();
+    state.currentMonth.setDate(1); // Garante que começa no dia 1 do mês
 
     state.isLoading = false;
     renderCalendar();
