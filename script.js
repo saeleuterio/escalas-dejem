@@ -13,6 +13,7 @@ let state = {
   allSheetNames: [],
   isLoading: true,
   error: null,
+  searchQuery: "", // Novo: termo de busca
 };
 
 // Elementos do DOM
@@ -21,6 +22,8 @@ const scalesContainer = document.getElementById("scalesContainer");
 const monthNameEl = document.getElementById("monthName");
 const prevMonthBtn = document.getElementById("prevMonthBtn");
 const nextMonthBtn = document.getElementById("nextMonthBtn");
+const searchInput = document.getElementById("searchInput");
+const clearSearchBtn = document.getElementById("clearSearchBtn");
 
 // ============================================
 // FUNÇÕES DE CARREGAMENTO DE DADOS
@@ -344,14 +347,31 @@ function hasScales(dateStr) {
 }
 
 /**
+ * Extrai a hora de início em minutos desde a meia-noite
+ * Suporta formatos: "06:00", "06:00-14:00", "22:00-06:00"
+ */
+function extractStartTime(timeStr) {
+  if (!timeStr) return 0;
+
+  // Pega a primeira parte (antes do hífen)
+  const startTime = timeStr.split("-")[0].trim();
+
+  // Converte HH:MM para minutos
+  const [hours, minutes] = startTime.split(":").map(Number);
+  return hours * 60 + (minutes || 0);
+}
+
+/**
  * Obtém escalas para uma data específica
  */
 function getScalesForDate(dateStr) {
   return state.allScales
     .filter((scale) => scale.date === dateStr)
     .sort((a, b) => {
-      // Ordena por horário
-      return a.time.localeCompare(b.time);
+      // Extrai hora de início para comparação numérica
+      const timeA = extractStartTime(a.time);
+      const timeB = extractStartTime(b.time);
+      return timeA - timeB;
     });
 }
 
@@ -468,6 +488,46 @@ function renderScales() {
     return;
   }
 
+  // Se tem busca, mostra resultados globais
+  if (state.searchQuery) {
+    const searchResults = searchScalesGlobally(state.searchQuery);
+
+    if (searchResults.length === 0) {
+      scalesContainer.innerHTML = `
+                <div class="card">
+                    <div class="empty-state">
+                        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <h3 class="empty-state-title">Nenhuma escala encontrada</h3>
+                        <p class="empty-state-text">Não há escalas com ID contendo "${state.searchQuery}"</p>
+                    </div>
+                </div>
+            `;
+      return;
+    }
+
+    // Renderiza resultados de busca
+    const header = document.createElement("div");
+    header.innerHTML = `
+            <h2 class="scales-title">Resultados da Busca</h2>
+            <p class="scales-count">${searchResults.length} escala${searchResults.length !== 1 ? "s" : ""} encontrada${searchResults.length !== 1 ? "s" : ""}</p>
+        `;
+    scalesContainer.appendChild(header);
+
+    const list = document.createElement("div");
+    list.className = "scales-list";
+
+    searchResults.forEach((scale) => {
+      const card = createScaleCard(scale, true);
+      list.appendChild(card);
+    });
+
+    scalesContainer.appendChild(list);
+    return;
+  }
+
   if (!state.selectedDate) {
     // Estado vazio - nenhuma data selecionada
     scalesContainer.innerHTML = `
@@ -514,11 +574,14 @@ function renderScales() {
     `;
   scalesContainer.appendChild(header);
 
+  // Filtra escalas por busca (se houver)
+  let displayScales = filterScalesBySearch(state.filteredScales);
+
   // Renderiza lista de escalas
   const list = document.createElement("div");
   list.className = "scales-list";
 
-  state.filteredScales.forEach((scale, index) => {
+  displayScales.forEach((scale, index) => {
     const card = createScaleCard(scale);
     list.appendChild(card);
   });
@@ -529,9 +592,14 @@ function renderScales() {
 /**
  * Cria um card de escala
  */
-function createScaleCard(scale) {
+function createScaleCard(scale, isSearchResult = false) {
   const card = document.createElement("div");
   card.className = "scale-card";
+
+  // Adiciona classe de destaque se for resultado de busca
+  if (isSearchResult) {
+    card.classList.add("search-highlight");
+  }
 
   // Formata o nome da aba para exibição
   const sheetDisplay = scale.sheet
@@ -541,10 +609,19 @@ function createScaleCard(scale) {
         .replace(" JUNHO 2026", "")
     : "Desconhecida";
 
+  // Destaca o ID se for resultado de busca
+  const idClass = isSearchResult ? "scale-id search-match" : "scale-id";
+
+  // Se for resultado de busca, adiciona a data
+  const dateDisplay = isSearchResult
+    ? `<span class="scale-date-badge">${scale.date}</span>`
+    : "";
+
   card.innerHTML = `
         <div class="scale-header">
             <div class="scale-id-info">
-                <span class="scale-id">ID: ${scale.id}</span>
+                <span class="${idClass}">ID: ${scale.id}</span>
+                ${dateDisplay}
                 <span class="scale-time-badge">${scale.time}</span>
             </div>
             <span class="scale-sheet-badge">${sheetDisplay}</span>
@@ -602,11 +679,75 @@ function copyLink(link) {
 }
 
 // ============================================
+// FUNÇÕES DE BUSCA
+// ============================================
+
+/**
+ * Manipula entrada de busca
+ */
+function handleSearch(event) {
+  state.searchQuery = event.target.value.trim().toLowerCase();
+
+  // Atualiza visibilidade do botão de limpar
+  if (state.searchQuery) {
+    clearSearchBtn.classList.add("visible");
+  } else {
+    clearSearchBtn.classList.remove("visible");
+  }
+
+  // Re-renderiza as escalas com filtro de busca
+  renderScales();
+}
+
+/**
+ * Limpa a busca
+ */
+function clearSearch() {
+  state.searchQuery = "";
+  searchInput.value = "";
+  clearSearchBtn.classList.remove("visible");
+  renderScales();
+}
+
+/**
+ * Filtra escalas por ID de busca
+ */
+function filterScalesBySearch(scales) {
+  if (!state.searchQuery) {
+    return scales;
+  }
+
+  return scales.filter((scale) =>
+    scale.id.toLowerCase().includes(state.searchQuery),
+  );
+}
+
+/**
+ * Busca escalas por ID em TODAS as datas
+ */
+function searchScalesGlobally(query) {
+  if (!query) {
+    return [];
+  }
+
+  return state.allScales
+    .filter((scale) => scale.id.toLowerCase().includes(query.toLowerCase()))
+    .sort((a, b) => {
+      // Ordena por data
+      const dateA = parseDate(a.date);
+      const dateB = parseDate(b.date);
+      return dateA - dateB;
+    });
+}
+
+// ============================================
 // EVENT LISTENERS
 // ============================================
 
 prevMonthBtn.addEventListener("click", previousMonth);
 nextMonthBtn.addEventListener("click", nextMonth);
+searchInput.addEventListener("input", handleSearch);
+clearSearchBtn.addEventListener("click", clearSearch);
 
 // ============================================
 // INICIALIZAÇÃO

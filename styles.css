@@ -479,7 +479,7 @@ code, pre {
 .footer p {
     text-align: center;
     color: #64748b;
-    font-size: 1rem;
+    font-size: 0.875rem;
 }
 
 /* Responsive */
@@ -595,4 +595,113 @@ code, pre {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
+}
+
+
+/* ============================================
+   SEARCH BAR STYLES
+   ============================================ */
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.search-bar:focus-within {
+    border-color: #06b6d4;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0.75rem 1rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    color: #1e293b;
+    background: transparent;
+}
+
+.search-input::placeholder {
+    color: #94a3b8;
+}
+
+.search-clear-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.search-clear-btn:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.search-clear-btn.visible {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Search Results Highlight */
+.scale-card.search-highlight {
+    border-color: #fbbf24;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.05) 0%, rgba(251, 191, 36, 0.02) 100%);
+}
+
+.scale-id.search-match {
+    background: #fbbf24;
+    color: #78350f;
+    animation: pulse 0.5s ease-out;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .search-bar {
+        margin-bottom: 1rem;
+    }
+
+    .search-input {
+        font-size: 1rem;
+        padding: 0.65rem 0.75rem;
+    }
+}
+
+
+/* Date Badge for Search Results */
+.scale-date-badge {
+    display: inline-block;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-family: 'Courier Prime', monospace;
+    margin: 0 0.5rem;
 }
