@@ -606,9 +606,6 @@ function createScaleCard(scale, isSearchResult = false) {
                 </svg>
                 Abrir
             </button>
-            <button class="btn btn-secondary" onclick="copyLink('${scale.link.replace(/'/g, "\\'")}')">
-                Copiar Link
-            </button>
         </div>
     `;
 
