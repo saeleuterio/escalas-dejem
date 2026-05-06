@@ -616,13 +616,6 @@ function createScaleCard(scale, isSearchResult = false) {
             </div>
             <span class="scale-sheet-badge">${sheetDisplay}</span>
         </div>
-        <div class="scale-link-info">
-            <svg class="scale-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-            </svg>
-            Link da escala no sistema
-        </div>
         <div class="scale-actions">
             <button class="btn btn-primary" onclick="window.open('${scale.link}', '_blank')">
                 <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -632,13 +625,6 @@ function createScaleCard(scale, isSearchResult = false) {
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                 </svg>
                 Abrir e Imprimir
-            </button>
-            <button class="btn btn-secondary" onclick="copyToClipboard('${scale.link}')">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                </svg>
-                Copiar Link
             </button>
         </div>
     `;
