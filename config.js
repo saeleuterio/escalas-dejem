@@ -11,7 +11,8 @@
 
 // ID da planilha do Google Sheets
 // Encontre na URL: https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit
-const SHEET_ID = "1yfqi7AQYeFrTue1H5rYM3iBugsmuKlXjvgpdKMto12Y";
+const SHEET_ID = '1yfqi7AQYeFrTue1H5rYM3iBugsmuKlXjvgpdKMto12Y';
+const API_KEY = "AIzaSyCOy74aEKiFssWDqDg5U8hDGQLvDhTTgrY";  // ← Adicione aqui
 
 // Colunas esperadas na planilha (em ordem)
 // A planilha tem: LINK | ID | DATA | HORA_INICIO | HORA_FIM
