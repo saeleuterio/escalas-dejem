@@ -827,13 +827,13 @@ code, pre {
     .btn {
         padding: 0.5rem 1rem;
         font-size: 0.875rem;
-        width: auto;
     }
 }
 
 .btn-primary {
     background: #06b6d4;
     color: white;
+    width: 100%;
 }
 
 .btn-primary:hover {
