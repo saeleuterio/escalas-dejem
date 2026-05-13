@@ -12,22 +12,19 @@
 </head>
 <body>
     <div id="app">
-        <!-- Header -->
+
         <header class="header">
             <div class="header-top">
                 <div class="header-container">
-                    <!-- Left GIF Space -->
                     <div class="header-gif-left">
                         <img id="gifLeft" src="./img/copom.png" alt="Decoracao esquerda" class="header-gif">
                     </div>
 
-                    <!-- Title -->
                     <div class="header-title-section">
                         <h1 class="header-main-title">ESCALAS DEJEM</h1>
                         <p class="header-subtitle">SELECIONE UMA DATA PARA VISUALIZAR AS ESCALAS DISPONÍVEIS</p>
                     </div>
 
-                    <!-- Right GIF Space -->
                     <div class="header-gif-right">
                         <img id="gifRight" src="./img/copom.png" alt="Decoracao direita" class="header-gif">
                     </div>
@@ -35,11 +32,11 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="main-content">
             <div class="main-container">
-                <!-- Search Bar (Top Full Width) -->
-                <div class="search-bar-wrapper">
+
+                <!-- BUSCA EXISTENTE DE ESCALAS NA PLANILHA -->
+                <!-- <div class="search-bar-wrapper">
                     <div class="search-bar">
                         <input 
                             type="text" 
@@ -49,36 +46,42 @@
                             autocomplete="off"
                         >
                         <button id="clearSearchBtn" class="search-clear-btn" title="Limpar busca">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
+                            X
+                        </button>
+                    </div>
+                </div> -->
+
+                <!-- BUSCA DE QUALQUER DEJEM PELA ID -->
+                <div class="search-bar-wrapper" style="margin-top:10px;">
+                    <div class="search-bar">
+                        <input 
+                            type="text" 
+                            id="buscaEscala" 
+                            class="search-input" 
+                            placeholder="Abrir qualquer escala pelo ID"
+                            autocomplete="off"
+                        >
+                        <button onclick="buscarEscala()" class="btn btn-primary" style="max-width:170px;">
+                            Abrir ID
                         </button>
                     </div>
                 </div>
 
                 <div class="grid">
-                    <!-- Calendar Section (Left, Smaller) -->
+
                     <div class="calendar-section">
                         <div class="card">
+
                             <div class="calendar-header">
                                 <div class="month-navigation">
                                     <h2 id="monthName" class="month-title">Carregando...</h2>
+
                                     <div class="nav-buttons">
-                                        <button id="prevMonthBtn" class="nav-btn" title="Mês anterior">
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <polyline points="15 18 9 12 15 6"></polyline>
-                                            </svg>
-                                        </button>
-                                        <button id="nextMonthBtn" class="nav-btn" title="Próximo mês">
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <polyline points="9 18 15 12 9 6"></polyline>
-                                            </svg>
-                                        </button>
+                                        <button id="prevMonthBtn" class="nav-btn">◀</button>
+                                        <button id="nextMonthBtn" class="nav-btn">▶</button>
                                     </div>
                                 </div>
 
-                                <!-- Weekday Headers -->
                                 <div class="weekdays">
                                     <div class="weekday">Dom</div>
                                     <div class="weekday">Seg</div>
@@ -90,12 +93,8 @@
                                 </div>
                             </div>
 
-                            <!-- Calendar Grid -->
-                            <div id="calendarGrid" class="calendar-grid">
-                                <!-- Preenchido por JavaScript -->
-                            </div>
+                            <div id="calendarGrid" class="calendar-grid"></div>
 
-                            <!-- Legend -->
                             <div class="calendar-legend">
                                 <div class="legend-item">
                                     <div class="legend-color selected"></div>
@@ -110,25 +109,24 @@
                                     <span>Sem escalas</span>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
-                    <!-- Scales List Section (Right, Main) -->
                     <div class="scales-section">
-                        <div id="scalesContainer">
-                            <!-- Preenchido por JavaScript -->
-                        </div>
+                        <div id="scalesContainer"></div>
                     </div>
+
                 </div>
             </div>
         </main>
 
-        <!-- Footer -->
         <footer class="footer">
             <div class="container">
-                <p>© 2026 | Desenvolvido por <strong>Saulo Eleutério</strong> | Versão 2026.05.06</p>
+                <p>© 2026 | Desenvolvido por <strong>Saulo Eleutério</strong></p>
             </div>
         </footer>
+
     </div>
 
     <script src="config.js"></script>

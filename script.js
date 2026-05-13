@@ -624,7 +624,7 @@ function createScaleCard(scale, isSearchResult = false) {
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                 </svg>
-                Abrir
+                Gerar Escala
             </button>
         </div>
     `;
@@ -754,3 +754,26 @@ if (document.readyState === "loading") {
 } else {
   init();
 }
+
+// ================================
+// ABRIR ESCALA DIRETA POR ID
+// ================================
+
+function buscarEscala() {
+    const campo = document.getElementById('buscaEscala');
+    const valor = campo ? campo.value.trim() : '';
+
+    if (!valor) {
+        alert('Digite o ID da escala.');
+        return;
+    }
+
+    const url = `https://sistemasadmin.intranet.policiamilitar.sp.gov.br/Escala/arrelpreesc.aspx?${valor}`;
+    window.open(url, '_blank');
+}
+
+document.getElementById('buscaEscala')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        buscarEscala();
+    }
+});
