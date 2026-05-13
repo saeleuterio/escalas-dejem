@@ -22,8 +22,7 @@ const scalesContainer = document.getElementById("scalesContainer");
 const monthNameEl = document.getElementById("monthName");
 const prevMonthBtn = document.getElementById("prevMonthBtn");
 const nextMonthBtn = document.getElementById("nextMonthBtn");
-const searchInput = document.getElementById("searchInput");
-const clearSearchBtn = document.getElementById("clearSearchBtn");
+const buscaEscala = document.getElementById("buscaEscala");
 
 // ============================================
 // FUNÇÕES DE DETECÇÃO DE ABAS (API)
@@ -663,48 +662,6 @@ function nextMonth() {
 }
 
 /**
- * Filtra escalas por busca
- */
-function handleSearch(event) {
-  state.searchQuery = event.target.value.toLowerCase();
-
-  if (state.searchQuery) {
-    clearSearchBtn.style.display = "block";
-  } else {
-    clearSearchBtn.style.display = "none";
-  }
-
-  renderScales();
-}
-
-/**
- * Limpa a busca
- */
-function clearSearch() {
-  state.searchQuery = "";
-  searchInput.value = "";
-  clearSearchBtn.style.display = "none";
-  renderScales();
-}
-
-/**
- * Busca escalas por ID em TODAS as datas
- */
-function searchScalesGlobally(query) {
-  if (!query) {
-    return [];
-  }
-
-  return state.allScales
-    .filter((scale) => scale.id.toLowerCase().includes(query.toLowerCase()))
-    .sort((a, b) => {
-      const dateA = parseDate(a.date);
-      const dateB = parseDate(b.date);
-      return dateA - dateB;
-    });
-}
-
-/**
  * Mostra mensagem de erro
  */
 function showError(message) {
@@ -731,8 +688,6 @@ function getSheetExportUrlAlternative(sheetName) {
 
 prevMonthBtn.addEventListener("click", previousMonth);
 nextMonthBtn.addEventListener("click", nextMonth);
-searchInput.addEventListener("input", handleSearch);
-clearSearchBtn.addEventListener("click", clearSearch);
 
 // ============================================
 // INICIALIZAÇÃO
@@ -755,13 +710,13 @@ if (document.readyState === "loading") {
   init();
 }
 
-// ================================
-// ABRIR ESCALA DIRETA POR ID
-// ================================
+// ============================================
+// ABRIR ESCALA DIRETA
+// ============================================
 
 function buscarEscala() {
     const campo = document.getElementById('buscaEscala');
-    const valor = campo ? campo.value.trim() : '';
+    const valor = campo.value.trim();
 
     if (!valor) {
         alert('Digite o ID da escala.');
@@ -772,7 +727,7 @@ function buscarEscala() {
     window.open(url, '_blank');
 }
 
-document.getElementById('buscaEscala')?.addEventListener('keypress', function(e) {
+buscaEscala?.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         buscarEscala();
     }
